@@ -1,0 +1,35 @@
+#!/bin/bash
+
+echo "RTL88xxAU Driver Pre-installation Script"
+
+# Check macOS version
+MACOS_VERSION=$(sw_vers -productVersion)
+MAJOR_VERSION=$(echo $MACOS_VERSION | cut -d. -f1)
+
+if [ "$MAJOR_VERSION" -lt 12 ]; then
+    echo "ERROR: This driver requires macOS 12.0 (Monterey) or later"
+    echo "Current version: $MACOS_VERSION"
+    exit 1
+fi
+
+echo "macOS version check passed: $MACOS_VERSION"
+
+# Check for existing driver
+KEXT_PATH="/System/Library/Extensions/RTL88xxAU.kext"
+if [ -d "$KEXT_PATH" ]; then
+    echo "Unloading existing RTL88xxAU driver..."
+    kextunload "$KEXT_PATH" 2>/dev/null || true
+    echo "Removing old driver installation..."
+    rm -rf "$KEXT_PATH"
+fi
+
+# Check for conflicting drivers
+CONFLICTING_DRIVERS=$(kextstat | grep -i realtek | grep -v RTL88xxAU || true)
+if [ -n "$CONFLICTING_DRIVERS" ]; then
+    echo "WARNING: Found potentially conflicting Realtek drivers:"
+    echo "$CONFLICTING_DRIVERS"
+    echo "These may need to be removed for optimal performance."
+fi
+
+echo "Pre-installation checks completed."
+exit 0

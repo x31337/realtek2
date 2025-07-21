@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<installer-script minSpecVersion="1.000000" authoringTool="RTL88xxAU" authoringToolVersion="1.0.0" authoringToolBuild="">
+    <title>RTL88xxAU USB WiFi Driver</title>
+    <organization>com.realtek.driver</organization>
+    <domains enable_anywhere="false" enable_currentUserHome="false" enable_localSystem="true"/>
+    <options customize="never" allow-external-scripts="no"/>
+    <choices-outline>
+        <line choice="choice1"/>
+    </choices-outline>
+    <choice id="choice1" title="RTL88xxAU Driver">
+        <pkg-ref id="com.realtek.driver.RTL88xxAU"/>
+    </choice>
+    <pkg-ref id="com.realtek.driver.RTL88xxAU" installKBytes="1024" version="1.0.0" auth="Root">RTL88xxAU-1.0.0.pkg</pkg-ref>
+</installer-script>
