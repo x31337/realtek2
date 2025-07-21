@@ -36,12 +36,27 @@ class InstallWorker(QObject):
                 self.finished.emit(False, "This installer only works on macOS")
                 return
             
+            # Get absolute paths to avoid permission issues
+            current_dir = os.path.abspath(os.getcwd())
+            install_script = os.path.join(current_dir, "scripts", "install.sh")
+            
+            if not os.path.exists(install_script):
+                self.finished.emit(False, f"Installation script not found: {install_script}")
+                return
+            
             self.progress.emit("Starting installation with admin privileges...")
             
-            # Run installation script with sudo
+            # Create AppleScript command with absolute paths
+            applescript_cmd = f'''
+            tell application "Terminal"
+                activate
+                do script "cd '{current_dir}' && sudo bash '{install_script}'"
+            end tell
+            '''
+            
+            # Run installation script with Terminal for better permission handling
             process = subprocess.Popen(
-                ['osascript', '-e', 
-                 'do shell script "sudo bash ./scripts/install.sh" with administrator privileges'],
+                ['osascript', '-e', applescript_cmd],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True
@@ -165,11 +180,19 @@ class RTL88xxAUInstaller(QMainWindow):
             "font-weight: bold; padding: 8px; }"
         )
         
+        self.terminal_button = QPushButton("Open Terminal")
+        self.terminal_button.clicked.connect(self.open_terminal)
+        self.terminal_button.setStyleSheet(
+            "QPushButton { background-color: #2196F3; color: white; "
+            "font-weight: bold; padding: 8px; }"
+        )
+        
         self.quit_button = QPushButton("Quit")
         self.quit_button.clicked.connect(self.close)
         
         button_layout.addWidget(self.detect_button)
         button_layout.addWidget(self.install_button)
+        button_layout.addWidget(self.terminal_button)
         button_layout.addWidget(self.quit_button)
         parent_layout.addLayout(button_layout)
     
@@ -213,12 +236,49 @@ class RTL88xxAUInstaller(QMainWindow):
         except Exception as e:
             self.output_text.append(f"Error detecting devices: {e}")
     
+    def open_terminal(self):
+        """Open Terminal with the installation command ready."""
+        try:
+            current_dir = os.path.abspath(os.getcwd())
+            install_script = os.path.join(current_dir, "scripts", "install.sh")
+            
+            # Create a terminal command that navigates to directory and runs installer
+            terminal_cmd = f"cd '{current_dir}' && sudo bash '{install_script}'"
+            
+            # Open Terminal with the command
+            applescript = f'''
+            tell application "Terminal"
+                activate
+                do script "{terminal_cmd}"
+            end tell
+            '''
+            
+            subprocess.run(['osascript', '-e', applescript])
+            
+            self.output_text.append("\nOpened Terminal with installation command.")
+            self.output_text.append("Please enter your password in Terminal when prompted.")
+            
+            # Show information dialog
+            QMessageBox.information(
+                self, 'Terminal Opened',
+                'Terminal has been opened with the installation command.\n\n'
+                'Please enter your administrator password when prompted '
+                'in the Terminal window to proceed with installation.'
+            )
+            
+        except Exception as e:
+            self.output_text.append(f"Error opening Terminal: {e}")
+            QMessageBox.warning(
+                self, 'Error',
+                f'Failed to open Terminal: {e}'
+            )
+    
     def install_driver(self):
         """Start the driver installation process."""
         reply = QMessageBox.question(
             self, 'Install Driver',
-            'This will install the RTL88xxAU driver with administrator privileges.\n\n'
-            'You will be prompted for your password. Continue?',
+            'This will open Terminal to install the RTL88xxAU driver with administrator privileges.\n\n'
+            'Please allow Terminal access and enter your password when prompted. Continue?',
             QMessageBox.Yes | QMessageBox.No,
             QMessageBox.No
         )
@@ -232,7 +292,8 @@ class RTL88xxAUInstaller(QMainWindow):
         self.status_label.setText(STATUS_INSTALLING)
         self.status_label.setStyleSheet("QLabel { color: blue; font-weight: bold; }")
         self.output_text.clear()
-        self.output_text.append("Starting installation...")
+        self.output_text.append("Opening Terminal for installation...")
+        self.output_text.append("Please follow the prompts in Terminal window.")
         
         # Run installation in separate thread
         thread = threading.Thread(target=self.worker.run_installation)

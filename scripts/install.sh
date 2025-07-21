@@ -7,6 +7,7 @@ set -e
 
 DRIVER_NAME="RTL88xxAU"
 KEXT_NAME="${DRIVER_NAME}.kext"
+# Default installation directory (may be changed based on SIP status)
 INSTALL_DIR="/System/Library/Extensions"
 BUILD_DIR="build"
 
@@ -46,16 +47,21 @@ check_root() {
 check_macos_version() {
     local macos_version=$(sw_vers -productVersion)
     local major_version=$(echo $macos_version | cut -d. -f1)
-    local minor_version=$(echo $macos_version | cut -d. -f2)
+    local minor_version=$(echo $macos_version | cut -d. -f2 | sed 's/[^0-9].*//g')
     
     print_status "Detected macOS version: $macos_version"
     
-    if [ "$major_version" -lt 12 ] || ([ "$major_version" -eq 11 ] && [ "$minor_version" -lt 0 ]); then
-        print_error "This driver requires macOS 12.0 (Monterey) or later"
+    # Handle macOS versioning (Big Sur 11.x, Monterey 12.x, Ventura 13.x, Sonoma 14.x, Sequoia 15.x, etc.)
+    if [ "$major_version" -ge 15 ] || [ "$major_version" -ge 14 ] || [ "$major_version" -ge 13 ] || [ "$major_version" -ge 12 ]; then
+        print_success "macOS version is supported (modern macOS)"
+    elif [ "$major_version" -eq 11 ] && [ "${minor_version:-0}" -ge 0 ]; then
+        print_success "macOS version is supported (Big Sur)"
+    elif [ "$major_version" -lt 11 ]; then
+        print_error "This driver requires macOS 11.0 (Big Sur) or later"
         exit 1
+    else
+        print_success "macOS version is supported"
     fi
-    
-    print_success "macOS version is supported"
 }
 
 # Check for Xcode command line tools
@@ -77,19 +83,19 @@ check_sip() {
     
     if echo "$sip_status" | grep -q "enabled"; then
         print_warning "System Integrity Protection (SIP) is enabled"
-        print_warning "You may need to disable SIP to install this driver"
-        print_status "To disable SIP:"
-        print_status "1. Boot into Recovery Mode (hold Cmd+R during startup)"
-        print_status "2. Open Terminal from Utilities menu"
-        print_status "3. Run: csrutil disable"
-        print_status "4. Restart and run this installer again"
-        print_status "5. Re-enable SIP after installation: csrutil enable"
+        print_status "Modern macOS may require SIP to be temporarily disabled for kernel extensions"
+        print_status "Alternative: We'll try to install using modern methods first"
         echo
-        read -p "Do you want to continue anyway? (y/N): " -n 1 -r
-        echo
-        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-            exit 0
+        
+        # Try to continue with modern installation methods
+        print_status "Attempting installation with SIP enabled..."
+        
+        # For modern macOS, we can try installing to /Library/Extensions instead
+        if [ -d "/Library/Extensions" ]; then
+            INSTALL_DIR="/Library/Extensions"
+            print_status "Using /Library/Extensions for modern macOS compatibility"
         fi
+        
     else
         print_success "System Integrity Protection is disabled or not found"
     fi
