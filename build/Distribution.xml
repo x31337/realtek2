@@ -1,14 +1,71 @@
-<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<installer-script minSpecVersion="1.000000" authoringTool="RTL88xxAU" authoringToolVersion="1.0.0" authoringToolBuild="">
-    <title>RTL88xxAU USB WiFi Driver</title>
-    <organization>com.realtek.driver</organization>
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="2">
+    <title>RTL88xxAU USB WiFi Driver for macOS</title>
+    <organization>com.realtek</organization>
     <domains enable_anywhere="false" enable_currentUserHome="false" enable_localSystem="true"/>
-    <options customize="never" allow-external-scripts="no"/>
+    <options customize="never" require-scripts="false" rootVolumeOnly="true"/>
+    
+    <!-- Package Reference -->
+    <pkg-ref id="com.realtek.driver.RTL88xxAU">
+        <bundle-version/>
+    </pkg-ref>
+    <pkg-ref id="com.realtek.driver.RTL88xxAU" version="1.0.0">RTL88xxAU-1.0.0.pkg</pkg-ref>
+    
+    <!-- Choice Outline -->
     <choices-outline>
-        <line choice="choice1"/>
+        <line choice="default">
+            <line choice="com.realtek.driver.RTL88xxAU"/>
+        </line>
     </choices-outline>
-    <choice id="choice1" title="RTL88xxAU Driver">
+    
+    <!-- Default Choice -->
+    <choice id="default">
         <pkg-ref id="com.realtek.driver.RTL88xxAU"/>
     </choice>
-    <pkg-ref id="com.realtek.driver.RTL88xxAU" installKBytes="1024" version="1.0.0" auth="Root">RTL88xxAU-1.0.0.pkg</pkg-ref>
-</installer-script>
+    
+    <!-- Main Driver Choice -->
+    <choice id="com.realtek.driver.RTL88xxAU" visible="true" enabled="true" selected="true">
+        <title>RTL88xxAU Driver</title>
+        <description>Install RTL88xxAU USB WiFi driver for Realtek RTL8812AU, RTL8821AU, and RTL8814AU chipsets including Alfa AWUS1900.</description>
+        <pkg-ref id="com.realtek.driver.RTL88xxAU"/>
+    </choice>
+    
+    <!-- Welcome -->
+    <welcome file="welcome.html" mime-type="text/html"/>
+    
+    <!-- README -->
+    <readme file="readme.html" mime-type="text/html"/>
+    
+    <!-- License -->
+    <license file="license.html" mime-type="text/html"/>
+    
+    <!-- Conclusion -->
+    <conclusion file="conclusion.html" mime-type="text/html"/>
+    
+    <!-- Background -->
+    <background file="background.jpg" mime-type="image/jpeg" alignment="bottomleft" scaling="none"/>
+    
+    <!-- Installation Check Script -->
+    <installation-check script="installationCheck()"/>
+    
+    <!-- JavaScript Functions -->
+    <script>
+    <![CDATA[
+    function installationCheck() {
+        // Check for macOS version
+        var version = system.version.ProductVersion;
+        var versionParts = version.split('.');
+        var majorVersion = parseInt(versionParts[0]);
+        
+        if (majorVersion < 11) {
+            my.result.title = 'macOS Version Not Supported';
+            my.result.message = 'This driver requires macOS 11.0 (Big Sur) or later. Your system is running macOS ' + version + '.';
+            my.result.type = 'Fatal';
+            return false;
+        }
+        
+        return true;
+    }
+    ]]>
+    </script>
+</installer-gui-script>

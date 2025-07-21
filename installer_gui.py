@@ -173,10 +173,17 @@ class RTL88xxAUInstaller(QMainWindow):
         self.detect_button = QPushButton("Detect Devices")
         self.detect_button.clicked.connect(self.detect_devices)
         
-        self.install_button = QPushButton("Install Driver")
-        self.install_button.clicked.connect(self.install_driver)
+        self.install_button = QPushButton("Install Driver (Simple)")
+        self.install_button.clicked.connect(self.install_driver_simple)
         self.install_button.setStyleSheet(
             "QPushButton { background-color: #4CAF50; color: white; "
+            "font-weight: bold; padding: 8px; }"
+        )
+        
+        self.advanced_button = QPushButton("Advanced Install")
+        self.advanced_button.clicked.connect(self.install_driver)
+        self.advanced_button.setStyleSheet(
+            "QPushButton { background-color: #FF9800; color: white; "
             "font-weight: bold; padding: 8px; }"
         )
         
@@ -192,6 +199,7 @@ class RTL88xxAUInstaller(QMainWindow):
         
         button_layout.addWidget(self.detect_button)
         button_layout.addWidget(self.install_button)
+        button_layout.addWidget(self.advanced_button)
         button_layout.addWidget(self.terminal_button)
         button_layout.addWidget(self.quit_button)
         parent_layout.addLayout(button_layout)
@@ -236,6 +244,55 @@ class RTL88xxAUInstaller(QMainWindow):
         except Exception as e:
             self.output_text.append(f"Error detecting devices: {e}")
     
+    def install_driver_simple(self):
+        """Install driver using simplified installer."""
+        reply = QMessageBox.question(
+            self, 'Install Driver (Simple)',
+            'This will install the RTL88xxAU driver using a simplified method that works better with modern macOS security.\n\n'
+            'This method will open Terminal. Continue?',
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.Yes
+        )
+        
+        if reply != QMessageBox.Yes:
+            return
+        
+        try:
+            current_dir = os.path.abspath(os.getcwd())
+            simple_script = os.path.join(current_dir, "scripts", "simple_install.sh")
+            
+            # Create a terminal command for simple installation
+            terminal_cmd = f"cd '{current_dir}' && sudo bash '{simple_script}'"
+            
+            # Open Terminal with the simplified installer
+            applescript = f'''
+            tell application "Terminal"
+                activate
+                do script "{terminal_cmd}"
+            end tell
+            '''
+            
+            subprocess.run(['osascript', '-e', applescript])
+            
+            self.output_text.append("\nOpened Terminal with simplified installer.")
+            self.output_text.append("This installer works better with modern macOS security.")
+            self.output_text.append("Please enter your password in Terminal when prompted.")
+            
+            # Show information dialog
+            QMessageBox.information(
+                self, 'Simplified Installer Started',
+                'Terminal has opened with the simplified installer.\n\n'
+                'This installer automatically handles modern macOS security restrictions.\n\n'
+                'Please enter your administrator password in Terminal when prompted.'
+            )
+            
+        except Exception as e:
+            self.output_text.append(f"Error opening simplified installer: {e}")
+            QMessageBox.warning(
+                self, 'Error',
+                f'Failed to open simplified installer: {e}'
+            )
+    
     def open_terminal(self):
         """Open Terminal with the installation command ready."""
         try:
@@ -255,13 +312,13 @@ class RTL88xxAUInstaller(QMainWindow):
             
             subprocess.run(['osascript', '-e', applescript])
             
-            self.output_text.append("\nOpened Terminal with installation command.")
+            self.output_text.append("\nOpened Terminal with full installation command.")
             self.output_text.append("Please enter your password in Terminal when prompted.")
             
             # Show information dialog
             QMessageBox.information(
                 self, 'Terminal Opened',
-                'Terminal has been opened with the installation command.\n\n'
+                'Terminal has been opened with the full installation command.\n\n'
                 'Please enter your administrator password when prompted '
                 'in the Terminal window to proceed with installation.'
             )
@@ -274,11 +331,12 @@ class RTL88xxAUInstaller(QMainWindow):
             )
     
     def install_driver(self):
-        """Start the driver installation process."""
+        """Start the advanced driver installation process."""
         reply = QMessageBox.question(
-            self, 'Install Driver',
-            'This will open Terminal to install the RTL88xxAU driver with administrator privileges.\n\n'
-            'Please allow Terminal access and enter your password when prompted. Continue?',
+            self, 'Advanced Install',
+            'This will run the full installation process with all system checks.\n\n'
+            'This method provides more detailed feedback but may require SIP to be disabled.\n\n'
+            'Continue with advanced installation?',
             QMessageBox.Yes | QMessageBox.No,
             QMessageBox.No
         )

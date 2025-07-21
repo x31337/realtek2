@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial; margin: 20px; }
+        h1 { color: #1d1d1f; font-size: 20px; margin-bottom: 20px; }
+        h2 { color: #333; font-size: 16px; margin-top: 20px; margin-bottom: 10px; }
+        p { line-height: 1.6; color: #424245; }
+        code { background-color: #f5f5f7; padding: 2px 6px; border-radius: 4px; font-family: 'SF Mono', Consolas, monospace; }
+        .note { background-color: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107; margin: 15px 0; }
+        ul { padding-left: 20px; }
+        li { margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <h1>RTL88xxAU Driver Installation Guide</h1>
+    
+    <h2>🔧 What This Installer Does</h2>
+    <p>This installer will:</p>
+    <ul>
+        <li>Install the RTL88xxAU kernel extension to your system</li>
+        <li>Configure proper permissions and ownership</li>
+        <li>Update the kernel extension cache</li>
+        <li>Attempt to load the driver automatically</li>
+    </ul>
+    
+    <h2>📍 Installation Location</h2>
+    <p>The driver will be installed to:</p>
+    <ul>
+        <li><code>/System/Library/Extensions/RTL88xxAU.kext</code> (Primary location)</li>
+        <li><code>/Library/Extensions/RTL88xxAU.kext</code> (Alternative for modern macOS)</li>
+    </ul>
+    
+    <h2>⚙️ Post-Installation Steps</h2>
+    <ol>
+        <li><strong>Connect your RTL88xxAU device</strong> to a USB port</li>
+        <li><strong>Open System Preferences → Network</strong></li>
+        <li>Look for your WiFi adapter in the list of interfaces</li>
+        <li>Configure your network settings as needed</li>
+    </ol>
+    
+    <div class="note">
+        <strong>Note:</strong> If your device doesn't appear immediately, try:
+        <ul>
+            <li>Restarting your Mac</li>
+            <li>Reconnecting the USB device</li>
+            <li>Checking for any Security & Privacy prompts</li>
+        </ul>
+    </div>
+    
+    <h2>🛠 Troubleshooting</h2>
+    
+    <h3>Driver Not Loading</h3>
+    <ul>
+        <li>Check if System Integrity Protection (SIP) needs to be disabled</li>
+        <li>Verify your device is compatible with the driver</li>
+        <li>Check system logs for error messages</li>
+    </ul>
+    
+    <h3>Device Not Recognized</h3>
+    <ul>
+        <li>Ensure the USB device is properly connected</li>
+        <li>Try a different USB port</li>
+        <li>Check if the device works on another computer</li>
+    </ul>
+    
+    <h2>📞 Support</h2>
+    <p>For additional help:</p>
+    <ul>
+        <li>Check the project documentation</li>
+        <li>Review system logs: <code>log show --predicate 'senderImagePath contains "RTL88xxAU"'</code></li>
+        <li>Verify driver status: <code>kextstat | grep RTL88xxAU</code></li>
+    </ul>
+</body>
+</html>

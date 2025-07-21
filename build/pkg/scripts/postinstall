@@ -1,0 +1,31 @@
+#!/bin/bash
+# RTL88xxAU Driver Package Post-installation Script
+
+echo "RTL88xxAU Driver Post-installation"
+
+# Set correct permissions
+chown -R root:wheel /System/Library/Extensions/RTL88xxAU.kext
+chmod -R 755 /System/Library/Extensions/RTL88xxAU.kext
+chmod 644 /System/Library/Extensions/RTL88xxAU.kext/Contents/Info.plist
+
+# Update kernel extension cache
+echo "Updating kernel extension cache..."
+kextcache -system-caches 2>/dev/null || {
+    echo "Warning: Could not update kernel extension cache"
+    echo "This may be due to System Integrity Protection (SIP)"
+}
+
+# Try to load the driver
+echo "Loading RTL88xxAU driver..."
+if kextload /System/Library/Extensions/RTL88xxAU.kext 2>/dev/null; then
+    echo "RTL88xxAU driver loaded successfully"
+else
+    echo "Note: Driver installed but not loaded immediately"
+    echo "This is normal on systems with SIP enabled"
+    echo "Please restart your Mac to complete installation"
+fi
+
+echo "RTL88xxAU driver installation completed!"
+echo "Your RTL88xxAU USB WiFi device should now be available"
+
+exit 0

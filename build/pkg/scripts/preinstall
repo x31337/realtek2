@@ -1,0 +1,16 @@
+#!/bin/bash
+# RTL88xxAU Driver Package Pre-installation Script
+
+echo "RTL88xxAU Driver Pre-installation"
+echo "Checking for existing driver installations..."
+
+# Unload existing driver if loaded
+kextunload /System/Library/Extensions/RTL88xxAU.kext 2>/dev/null || true
+kextunload /Library/Extensions/RTL88xxAU.kext 2>/dev/null || true
+
+# Remove old installations
+rm -rf /System/Library/Extensions/RTL88xxAU.kext 2>/dev/null || true
+rm -rf /Library/Extensions/RTL88xxAU.kext 2>/dev/null || true
+
+echo "System prepared for RTL88xxAU driver installation"
+exit 0

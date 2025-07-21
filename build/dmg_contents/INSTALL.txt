@@ -1,0 +1,44 @@
+RTL88xxAU macOS Driver Installation Instructions
+=====================================================
+
+Thank you for downloading the RTL88xxAU USB WiFi Driver for macOS!
+
+INSTALLATION OPTIONS:
+
+1. PROFESSIONAL INSTALLER (Recommended)
+   • Double-click "RTL88xxAU-Professional-Installer-1.0.0.pkg"
+   • Follow the guided installation wizard
+   • Includes system checks and professional interface
+
+2. GUI APPLICATION
+   • Double-click "RTL88xxAU Installer.app"
+   • Choose your preferred installation method:
+     - Simple Install (works with SIP enabled)
+     - Advanced Install (full system validation)
+     - Terminal (command-line access)
+
+3. COMMAND LINE (Advanced Users)
+   • Open Terminal in the mounted disk image
+   • Run: sudo bash scripts/simple_install.sh
+
+SYSTEM REQUIREMENTS:
+• macOS 11.0 (Big Sur) or later
+• Intel x86_64 or Apple Silicon (ARM64)
+• Administrator privileges
+• Compatible RTL88xxAU USB WiFi device
+
+SUPPORTED DEVICES:
+• Realtek RTL8812AU (Dual-band 802.11ac USB 3.0)
+• Realtek RTL8821AU (Single-band 802.11ac USB)
+• Realtek RTL8814AU (Dual-band 802.11ac USB 3.0 with 4x4 MIMO)
+• Alfa AWUS1900 (RTL8814AU-based)
+• Alfa AWUS036ACS (RTL8812AU-based)
+
+IMPORTANT NOTES:
+• System Integrity Protection (SIP) may need to be disabled on some systems
+• A restart may be required after installation
+• Your device should appear in Network Preferences after installation
+
+For detailed documentation, see README.md
+
+© 2024 RTL88xxAU macOS Driver Project
