@@ -150,6 +150,21 @@ package: build
 	
 	@echo "Package created: $(BUILD_DIR)/RTL88xxAU-$(KEXT_VERSION).pkg"
 
+# Build GUI application
+gui:
+	@echo "Building GUI installer application..."
+	pip3 install -r requirements.txt
+	@echo "GUI application ready: RTL88xxAU Installer.app"
+	@echo "Run with: python3 installer_gui.py"
+	@echo "Or double-click: RTL88xxAU Installer.app"
+
+# Install GUI dependencies
+gui-deps:
+	@echo "Installing GUI dependencies..."
+	pip3 install --upgrade pip
+	pip3 install -r requirements.txt
+	@echo "GUI dependencies installed"
+
 # Help target
 help:
 	@echo "RTL88xxAU macOS Driver Build System"
@@ -163,7 +178,9 @@ help:
 	@echo "  unload   - Unload the kernel extension"
 	@echo "  test     - Test the kernel extension"
 	@echo "  package  - Create installer package"
+	@echo "  gui      - Build GUI installer application"
+	@echo "  gui-deps - Install GUI dependencies"
 	@echo "  clean    - Clean build files"
 	@echo "  help     - Show this help message"
 
-.PHONY: all build install uninstall load unload test clean package help
+.PHONY: all build install uninstall load unload test clean package gui gui-deps help

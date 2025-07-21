@@ -10,8 +10,9 @@
 OSDefineMetaClassAndStructors(RTL88xxAU, IOEthernetController);
 
 bool RTL88xxAU::init(OSDictionary *properties) {
-    if (!super::init(properties))
+    if (!super::init(properties)) {
         return false;
+    }
     
     fStarted = false;
     fEnabled = false;
@@ -28,8 +29,9 @@ void RTL88xxAU::free() {
 
 bool RTL88xxAU::start(IOService *provider) {
     IOLog("[RTL88xxAU] Starting driver\n");
-    if (!super::start(provider))
+    if (!super::start(provider)) {
         return false;
+    }
     
     fInterface = OSDynamicCast(IOUSBInterface, provider);
     if (!fInterface) {
@@ -38,7 +40,7 @@ bool RTL88xxAU::start(IOService *provider) {
     }
 
     fDevice = fInterface->GetDevice();
-
+    
     fVendorID = fDevice->GetVendorID();
     fProductID = fDevice->GetProductID();
 
