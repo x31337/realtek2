@@ -16,8 +16,8 @@ A macOS kernel extension (kext) driver for Realtek RTL8812AU, RTL8821AU, and RTL
 
 ## System Requirements
 
-- **macOS**: 12.0 (Monterey) or later
-- **Architecture**: Intel x86_64 and Apple Silicon (ARM64)
+- **macOS**: Version 26.3 Beta (25D5087f) macOS Tahoe or later
+- **Architecture**: Intel x86_64 and Apple Silicon (ARM64) Apple M1, M2, M3, M4, M5, M6, M7 Pro + Max
 - **Xcode**: Latest version with command line tools
 - **System Integrity Protection**: May need to be disabled for installation
 
